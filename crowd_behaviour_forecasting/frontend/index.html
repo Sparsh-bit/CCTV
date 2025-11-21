@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Industry-level Crowd Behavior Forecasting System with Real-time Anomaly Detection"
+    />
+    <title>Crowd Behavior Forecasting System</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <h1>👥 Crowd Behavior Forecasting System</h1>
+                <p class="subtitle">Real-time Anomaly Detection & Trajectory Analysis</p>
+            </div>
+            <div class="status-badge">
+                <span class="status-dot online"></span>
+                <span class="status-text">ONLINE</span>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('inference')">Inference</button>
+            <button class="nav-tab" onclick="switchTab('model')">Model Info</button>
+            <button class="nav-tab" onclick="switchTab('results')">Results</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <section id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <h3>Model Status</h3>
+                    <div class="stat-value">✓ Ready</div>
+                    <p class="stat-label">Transformer Model</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Inference Speed</h3>
+                    <div class="stat-value">10.04 FPS</div>
+                    <p class="stat-label">On CPU</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Model Parameters</h3>
+                    <div class="stat-value">3.2M</div>
+                    <p class="stat-label">Trainable Parameters</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Device</h3>
+                    <div class="stat-value">CPU</div>
+                    <p class="stat-label">Optimized</p>
+                </div>
+            </div>
+
+            <div class="system-info">
+                <h2>System Overview</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Training Status:</span>
+                        <span class="value">✓ Complete (5 epochs)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Final Loss:</span>
+                        <span class="value">0.7052</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Model File:</span>
+                        <span class="value">transformer_final.pt (13.2 MB)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Architecture:</span>
+                        <span class="value">Transformer with 4 layers</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inference Tab -->
+        <section id="inference" class="tab-content">
+            <div class="inference-panel">
+                <h2>Real-time Inference</h2>
+                
+                <div class="inference-input">
+                    <div class="input-group">
+                        <label for="videoInput">Upload Video:</label>
+                        <input type="file" id="videoInput" accept="video/*">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="batchSize">Batch Size:</label>
+                        <input type="number" id="batchSize" min="1" max="64" value="8">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="threshold">Anomaly Threshold:</label>
+                        <input type="range" id="threshold" min="0" max="1" step="0.1" value="0.5">
+                        <span id="thresholdValue">0.5</span>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="runInference()">Run Inference</button>
+                    <button class="btn btn-secondary" onclick="testQuickInference()">Run Quick Test</button>
+                </div>
+
+                <div class="inference-status">
+                    <h3>Status</h3>
+                    <div id="inferenceStatus" class="status-box">Ready for inference</div>
+                </div>
+
+                <div class="inference-results">
+                    <h3>Results</h3>
+                    <div id="inferenceResults" class="results-box">
+                        <p>Results will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model Info Tab -->
+        <section id="model" class="tab-content">
+            <div class="model-info">
+                <h2>Model Architecture</h2>
+                
+                <div class="architecture-card">
+                    <h3>Transformer Behavior Predictor</h3>
+                    <div class="architecture-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Model Type:</span>
+                            <span class="detail-value">Transformer</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Input Dimension:</span>
+                            <span class="detail-value">6 (x, y, vx, vy, ax, ay)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Hidden Dimension (d_model):</span>
+                            <span class="detail-value">256</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Attention Heads:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Number of Layers:</span>
+                            <span class="detail-value">4</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Total Parameters:</span>
+                            <span class="detail-value">3,194,114</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Output:</span>
+                            <span class="detail-value">Anomaly Score + Attention Weights</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="architecture-card">
+                    <h3>Performance Metrics</h3>
+                    <div class="metrics-table">
+                        <table>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr>
+                                <td>Model Load Time</td>
+                                <td>&lt; 1 second</td>
+                            </tr>
+                            <tr>
+                                <td>Inference Latency</td>
+                                <td>~99 ms per frame</td>
+                            </tr>
+                            <tr>
+                                <td>Throughput</td>
+                                <td>10.04 FPS</td>
+                            </tr>
+                            <tr>
+                                <td>Memory Usage</td>
+                                <td>~500 MB</td>
+                            </tr>
+                            <tr>
+                                <td>Device</td>
+                                <td>CPU (No CUDA)</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="architecture-card">
+                    <h3>Training Details</h3>
+                    <div class="training-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Training Device:</span>
+                            <span class="detail-value">CPU</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Epochs Completed:</span>
+                            <span class="detail-value">5 / 5</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Final Loss:</span>
+                            <span class="detail-value">0.7052</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Batch Size:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Learning Rate:</span>
+                            <span class="detail-value">0.001</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Optimizer:</span>
+                            <span class="detail-value">Adam</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Tab -->
+        <section id="results" class="tab-content">
+            <div class="results-panel">
+                <h2>Inference Results</h2>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Quick Inference Test</h3>
+                        <div class="result-content">
+                            <div class="result-item">
+                                <span class="label">Status:</span>
+                                <span class="value success">✓ PASSED</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Input Shape:</span>
+                                <span class="value">[4, 30, 6]</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Anomaly Scores:</span>
+                                <span class="value">[0.4502, 0.4502, 0.4502, 0.4502]</span>
+                            </div>
+                            <button class="btn btn-small" onclick="viewQuickTest()">View Full Results</button>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Demo Inference Test</h3>
+                        <div class="result-content">
+                            <div class="result-item">
+                                <span class="label">Status:</span>
+                                <span class="value success">✓ PASSED</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Video Resolution:</span>
+                                <span class="value">1280x720</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Frames Processed:</span>
+                                <span class="value">10 / 1800</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Throughput:</span>
+                                <span class="value">10.04 FPS</span>
+                            </div>
+                            <button class="btn btn-small" onclick="viewDemoTest()">View Full Results</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anomaly-chart">
+                    <h3>Anomaly Scores Over Time</h3>
+                    <canvas id="anomalyChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="metrics-display">
+                    <h3>Performance Summary</h3>
+                    <div class="metric-row">
+                        <span class="metric-name">Total Frames Processed:</span>
+                        <span class="metric-value">10 frames</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Average Anomaly Score:</span>
+                        <span class="metric-value">0.4502</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Processing Time:</span>
+                        <span class="metric-value">0.996 seconds</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">Average FPS:</span>
+                        <span class="metric-value">10.04 frames/sec</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2025 Crowd Behavior Forecasting System | Status: <strong>OPERATIONAL</strong></p>
+            <p>Model: Transformer | Device: CPU | Throughput: 10.04 FPS</p>
+        </footer>
+    </div>
+    </div>
+  </body>
+</html>

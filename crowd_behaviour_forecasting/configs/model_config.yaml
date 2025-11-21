@@ -1,0 +1,133 @@
+model:
+
+  type: "gnn"
+
+  gnn:
+    input_dim: 6
+    hidden_dim: 128
+    num_layers: 3
+    output_dim: 1
+    dropout: 0.1
+    use_attention: true
+
+  transformer:
+    input_dim: 6
+    d_model: 256
+    num_heads: 8
+    num_layers: 4
+    dim_feedforward: 1024
+    dropout: 0.1
+    max_seq_length: 1000
+    output_dim: 1
+
+  convlstm:
+    input_channels: 3
+    hidden_channels: 64
+    num_layers: 3
+    kernel_size: 3
+    dropout: 0.1
+    output_dim: 1
+
+data:
+
+  target_fps: 30
+  frame_size: [1280, 720]
+
+  detector:
+    model_size: "m"
+    confidence_threshold: 0.5
+
+  tracking:
+    max_disappeared: 30
+    distance_threshold: 50.0
+
+  buffer_size: 30
+  min_trajectory_length: 5
+
+  normalize: true
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+training:
+
+  optimizer: "adam"
+  learning_rate: 0.001
+  weight_decay: 0.0001
+
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 5
+    t_max: 100
+
+  num_epochs: 100
+  batch_size: 32
+  num_workers: 4
+
+  loss_fn: "bce"
+  anomaly_threshold: 0.5
+
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
+
+  device: "cpu"
+  mixed_precision: false
+
+inference:
+  batch_size: 32
+  frame_buffer: 30
+  detection_threshold: 0.5
+  tracking_threshold: 0.7
+  device: "cpu"
+
+  model_path: "models/checkpoints/best.pt"
+  use_onnx: false
+  onnx_model_path: "models/onnx/model.onnx"
+
+deployment:
+
+  onnx_opset: 14
+  onnx_export: true
+
+  quantization:
+    enabled: true
+    type: "int8"
+
+  tensorrt:
+    enabled: false
+    precision: "fp32"
+
+  server_host: "0.0.0.0"
+  server_port: 8000
+  max_latency_ms: 200
+
+evaluation:
+  datasets:
+    - "umn"
+    - "shanghaitech"
+
+  metrics:
+    - "anomaly_f1"
+    - "auc_roc"
+    - "latency"
+    - "robustness"
+
+  test_split: 0.2
+  val_split: 0.1
+
+logging:
+  level: "INFO"
+  log_dir: "logs"
+  save_interval: 10
+
+  checkpoint_dir: "models/checkpoints"
+  save_best_only: true
+  best_metric: "val_f1"
+
+system:
+  num_gpus: 1
+  num_workers: 4
+  seed: 42
+
+  mixed_precision: false
+  gradient_accumulation_steps: 1

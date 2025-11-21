@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  crowd-forecast:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    image: crowd-forecast:latest
+    container_name: crowd-forecast-api
+
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./results:/app/results
+      - ./logs:/app/logs
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    restart: unless-stopped
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: crowd-forecast-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deployment/docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+
+volumes:
+  data:
+  models:
+  results:
+  logs:
